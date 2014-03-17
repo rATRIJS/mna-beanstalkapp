@@ -1,0 +1,11 @@
+{
+	"name": "mna/beanstalkapp-api",
+	"autoload": {
+		"psr-4": {
+			"MNA\\Beanstalkapp\\": "src/"
+		}
+	},
+	"require": {
+		"icanboogie/inflector": "1.*"
+	}
+}
