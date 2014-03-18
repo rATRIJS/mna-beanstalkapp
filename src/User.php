@@ -112,4 +112,8 @@ class User extends Resource {
 		
 		return $this;
 	}
+	
+	public function createPermission($repositoryId, array $parameters = []) {
+		return Permission::create($repositoryId, $this->id, $parameters, $this->api);
+	}
 }

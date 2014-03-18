@@ -132,6 +132,10 @@ class Repository extends Resource {
 		return File::create($this->id, $path, $contents, $parameters, $this->api);
 	}
 	
+	public function createPermission($userId, array $parameters = []) {
+		return Permission::create($this->id, $userId, $parameters, $this->api);
+	}
+	
 	public function getNode(array $parameters = []) {
 		return Node::get($this->id, $parameters, $this->api);
 	}

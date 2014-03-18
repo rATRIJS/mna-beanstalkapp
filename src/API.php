@@ -114,231 +114,144 @@ class API {
 	// Accounts
 	
 	public function account() {
-		// return Account
-	}
-	
-	public function updateAccount(array $account) {
-		//
+		return Account::get($this);
 	}
 	
 	// Plans
 	
 	public function plans() {
-		// return Plans[]
+		return Plan::find($this);
 	}
 	
 	// Users
 	
 	public function users(array $parameters = []) {
-		$parameters = array_merge([
-			'page' => null,
-			'per_page' => null
-		], $parameters);
-		
-		// return Users[]
+		return User::find($parameters, $this);
 	}
 	
 	public function user($userId) {
-		// return User
+		return User::get($userId, $this);
 	}
 	
 	public function currentUser() {
-		// return User
+		return User::current($this);
 	}
 	
-	public function createUser(array $user) {
-		// return User
-	}
-	
-	public function updateUser($userId, array $user) {
-		// return User
-	}
-	
-	public function deleteUser($userId) {
-		// return bool
+	public function createUser() {
+		return User::create($login, $email, $name, $password, $parameters, $this);
 	}
 	
 	// Invitations
 	
 	public function invitations() {
-		// return Invitation[]
+		return Invitation::find($this);
 	}
 	
 	public function invitation($invitationId) {
-		// return Invitation
+		return Invitation::get($invitationId, $this);
 	}
 	
-	public function createInvitation(array $invitation) {
-		// return Invitation
+	public function createInvitation($email, $name) {
+		return Invitation::create($email, $name, $this);
 	}
 	
 	public function resendInvitation($userId) {
-		// return Invitation
+		return Invitation::resend($userId, $this);
 	}
 	
 	// Public Keys
 	
 	public function publicKeys($userId = null) {
-		// return PublicKey[]
+		return PublicKey::find($userId, $this);
 	}
 	
 	public function publicKey($publicKeyId) {
-		// return PublicKey
+		return PublicKey::get($publicKeyId, $this);
 	}
 	
-	public function createPublicKey(array $publicKey, $userId = null) {
-		// return PublicKey
-	}
-	
-	public function updatePublicKey($publicKeyId, array $publicKey) {
-		// return PublicKey
-	}
-	
-	public function deletePublicKey($publicKeyId) {
-		// return bool
+	public function createPublicKey($content, array $parameters = []) {
+		return PublicKey::create($content, $parameters, $this);
 	}
 	
 	// Feed Keys
 	
 	public function feedKey() {
-		// return FeedKey
-	}
-	
-	public function globalFeedUrl($accountName = null, $feedKey = null) {
-		if (!isset($accountName)) {
-			$accountName = $this->account()->name;
-		}
-		
-		if (!isset($feedKey)) {
-			$feedKey = $this->feedKey()->name;
-		}
-		
-		return "https://{$accountName}.beanstalkapp.com/atom/{$feedKey}";
-	}
-	
-	public function repositoryFeedUrl($repositoryName, $accountName = null, $feedKey = null) {
-		if (!isset($accountName)) {
-			$accountName = $this->account()->name;
-		}
-		
-		if (!isset($feedKey)) {
-			$feedKey = $this->feedKey()->name;
-		}
-		
-		return "https://{$accountName}.beanstalkapp.com/{$repositoryName}/activity/atom/{$feedKey}";
+		return FeedKey::get($this);
 	}
 	
 	// Repositories
 	
 	public function repositories(array $parameters = []) {
-		$parameters = array_merge([
-			'page' => null,
-			'per_page' => null
-		], $parameters);
-		
-		// return Repository[]
+		return Repository::find($parameters, $this);
 	}
 	
 	public function repository($repositoryId) {
-		// return Repository
+		return Repository::get($repositoryId, $this);
 	}
 	
-	public function branches($repositoryId) {
-		// return Branch[]
+	public function createGitRepository($title, $name, array $parameters = []) {
+		return Repository::createGitRepository($title, $name, $parameters, $this);
 	}
 	
-	public function tags($repositoryId) {
-		// return Tag[]
-	}
-	
-	public function createRepository(array $repository) {
-		// return Repository[]
-	}
-	
-	public function updateRepository($repositoryId, array $repository) {
-		// return Repository[]
+	public function createSubversionRepository($title, $name, array $parameters = []) {
+		return Repository::createSubversionRepository($title, $name, $parameters, $this);
 	}
 	
 	// Repository Imports
 	
 	public function repositoryImports() {
-		// return RepositoryImport[]
+		return RepositoryImport::find($this);
 	}
 	
 	public function repositoryImport($repositoryImportId) {
-		// return RepositoryImport
+		return RepositoryImport::get($repositoryImportId, $this);
 	}
 	
-	public function createRepositoryImport($repositoryId, array $repositoryImport) {
-		// return RepositoryImport
+	public function createRepositoryImport($repositoryId, $uri) {
+		return RepositoryImport::create($repositoryId, $uri, $this);
 	}
 	
 	// Permissions
 	
-	public function permissions($userId = null) {
-		// return Permission[]
+	public function permissions($userId) {
+		return Permission::find($userId, $this);
 	}
 	
-	public function createPermission($repositoryId, array $permission, $userId = null) {
-		// return Permission
-	}
-	
-	public function deletePermission($permissionID) {
-		// return bool
+	public function createPermission($repositoryId, $userId, array $parameters = []) {
+		return Permission::create($repositoryId, $userId, $parameters, $this);
 	}
 	
 	// TODO: Integrations
 	
 	// Changesets
 	
-	public function changesets(array $parameters = [], $repositoryId = null) {
-		$parameters = array([
-			'page' => null,
-			'per_page' => null,
-			'order_field' => null,
-			'order' => null
-		], $parameters);
-		
-		// return Changeset[]
+	public function changesets(array $parameters = []) {
+		return ChangeSet::find($parameters, $this);
 	}
 	
-	public function changeset($revision, $repositoryId) {
-		// return Changeset
+	public function changesetsForRepository($repositoryId, array $parameters = []) {
+		return ChangeSet::findForRepository($repositoryId, $parameters, $this);
 	}
 	
-	public function changesetDiffs($revision, $repositoryId) {
-		// return Diff[]
+	public function changeset($repositoryId, $revision) {
+		return ChangeSet::get($repositoryId, $revision, $this);
 	}
 	
-	// Comments
-	
-	public function comments($repositoryId, $revision = null, array $parameters = []) {
-		$parameters = array_merge([
-			'page' => null,
-			'per_page' => null
-		], $parameters);
-		
-		// return Comment[]
+	public function changesetDiffs($repositoryId, $revision) {
+		return ChangeSetDiff::find($repositoryId, $revision, $this);
 	}
 	
-	public function userComments($userId, array $parameters = []) {
-		$parameters = array_merge([
-			'page' => null,
-			'per_page' => null
-		], $parameters);
-		
-		// return Comment[]
+	// TODO: Comments
+	
+	// Nodes
+	
+	public function node($repositoryId, array $parameters = []) {
+		return Node::get($repositoryId, $parameters, $this);
 	}
 	
-	public function comment($repositoryId, $commentID) {
-		// return Comment
+	public function createFile($repositoryId, $path, $contents, array $parameters = []) {
+		return File::create($repositoryId, $path, $contents, $parameters, $this);
 	}
-	
-	public function createComment($repositoryId, array $comment) {
-		// return Comment
-	}
-	
-	// TODO: Nodes
 	
 	// TODO: Server Environments
 	
