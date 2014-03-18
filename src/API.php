@@ -189,6 +189,14 @@ class API {
 		return Repository::get($repositoryId, $this);
 	}
 	
+	public function repositoryBranches($repositoryId) {
+		return RepositoryBranch::find($repositoryId, $this);
+	}
+	
+	public function repositoryTags($repositoryId) {
+		return RepositoryTag::find($repositoryId, $this);
+	}
+	
 	public function createGitRepository($title, $name, array $parameters = []) {
 		return Repository::createGitRepository($title, $name, $parameters, $this);
 	}
@@ -247,6 +255,10 @@ class API {
 	
 	public function node($repositoryId, array $parameters = []) {
 		return Node::get($repositoryId, $parameters, $this);
+	}
+	
+	public function blob($repositoryId, $id, array $parameters = []) {
+		return Blob::get($repositoryId, $id, $parameters, $this);
 	}
 	
 	public function createFile($repositoryId, $path, $contents, array $parameters = []) {

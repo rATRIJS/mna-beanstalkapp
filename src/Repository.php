@@ -136,8 +136,24 @@ class Repository extends Resource {
 		return Permission::create($this->id, $userId, $parameters, $this->api);
 	}
 	
+	public function getBranches() {
+		return RepositoryBranch::find($this->id, $this->api);
+	}
+	
+	public function getTags() {
+		return RepositoryTag::find($this->id, $this->api);
+	}
+	
 	public function getNode(array $parameters = []) {
 		return Node::get($this->id, $parameters, $this->api);
+	}
+	
+	public function getChangeset($revision) {
+		return ChangeSet::get($this->id, $revision, $this->api);
+	}
+	
+	public function findChangeset(array $parameters = []) {
+		return ChangeSet::findForRepository($this->id, $parameters, $this->api);
 	}
 	
 	public function isGit() {

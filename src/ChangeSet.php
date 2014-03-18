@@ -74,7 +74,7 @@ class ChangeSet extends Resource {
 		return new static($response["revision_cache"], $api);
 	}
 	
-	public function diff() {
+	public function getDiff() {
 		return ChangeSetDiff::find($this->repositoryId, $this->revision, $this->api);
 	}
 }
