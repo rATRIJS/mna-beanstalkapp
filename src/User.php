@@ -7,7 +7,6 @@ class User extends Resource {
 	protected $login;
 	protected $email;
 	protected $name;
-	protected $password;
 	protected $firstName;
 	protected $lastName;
 	protected $owner;
@@ -17,10 +16,8 @@ class User extends Resource {
 	protected $createdAt;
 	
 	protected $mutableProperties = [
-		'login',
 		'email',
 		'name',
-		'password',
 		'admin',
 		'timezone'
 	];
@@ -74,35 +71,28 @@ class User extends Resource {
 		return new static($response["user"], $api);
 	}
 	
-	public function create() {
-		$parameters = $this->exportForApi();
-		if (empty($parameters["admin"])) {
-			unset($parameters["admin"]);
-		}
-		if (empty($parameters["timezone"])) {
-			unset($parameters["timezone"]);
+	public static function create($login, $email, $name, $password, array $parameters = [], API $api = null) {
+		if (!isset($api)) {
+			$api = API::main();
 		}
 		
-		$response = $this->api->request("/users", $parameters, API::REQUEST_METHOD_POST);
+		$parameters = array_merge($parameters, [
+			"login" => $login,
+			"email" => $email,
+			"name" => $name,
+			"password" => $password
+		]);
+		
+		$response = $api->request("/users", $parameters, API::REQUEST_METHOD_POST);
 		if (!isset($response["user"])) {
 			throw new Exceptions\MalformedResponseException("`user` key not available in API response.");
 		}
 		
-		$this->fill($response["user"]);
-		unset($this->password);
-		
-		return $this;
+		return new static($response["user"], $api);
 	}
 	
-	public function update() {
-		$parameters = $this->exportForApi();
-		unset($parameters["login"]);
-		if (empty($parameters["password"])) {
-			unset($parameters["password"]);
-		}
-		if (!isset($parameters["admin"])) {
-			unset($parameters["admin"]);
-		}
+	public function update(array $parameters = []) {
+		$parameters = array_merge($this->exportForApi(), $parameters);
 		if (empty($parameters["timezone"])) {
 			unset($parameters["timezone"]);
 		}
@@ -113,7 +103,6 @@ class User extends Resource {
 		}
 		
 		$this->fill($response["user"]);
-		unset($this->password);
 		
 		return $this;
 	}

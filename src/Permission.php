@@ -11,16 +11,6 @@ class Permission extends Resource {
 	protected $read;
 	protected $write;
 	
-	protected $mutableProperties = [
-		'repositoryId',
-		'userId',
-		'deployOnlyAccess',
-		'serverEnvironmentId',
-		'fullDeploymentsAccess',
-		'read',
-		'write'
-	];
-	
 	public static function find($userId, API $api = null) {
 		if (!isset($api)) {
 			$api = API::main();
@@ -40,19 +30,22 @@ class Permission extends Resource {
 		return $permissions;
 	}
 	
-	public function create($repositoryId, $userId) {
-		$parameters = $this->exportForApi();
-		$parameters["repository_id"] = $repositoryId;
-		$parameters["user_id"] = $userId;
+	public static function create($repositoryId, $userId, array $parameters = [], API $api = null) {
+		if (!isset($api)) {
+			$api = API::main();
+		}
 		
-		$response = $this->api->request("/permissions", $parameters, API::REQUEST_METHOD_POST);
-		if (!isset($permission["permission"])) {
+		$parameters = array_merge($parameters, [
+			"repository_id" => $repositoryId,
+			"user_id" => $userId
+		]);
+		
+		$response = $api->request("/permissions", $parameters, API::REQUEST_METHOD_POST);
+		if (!isset($response["permission"])) {
 			throw new Exceptions\MalformedResponseException("`permission` key not available in API response.");
 		}
 		
-		$this->fill($response["permission"]);
-		
-		return $this;
+		return new static($response["permission"], $api);
 	}
 	
 	public function delete() {

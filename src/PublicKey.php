@@ -52,20 +52,21 @@ class PublicKey extends Resource {
 		return new static($response["public_key"], $api);
 	}
 	
-	public function create($userId = null) {
-		$parameters = $this->exportForApi();
-		if (empty($parameters["name"])) {
-			unset($parameters["name"]);
+	public static function create($content, array $parameters = [], API $api = null) {
+		if (!isset($api)) {
+			$api = API::main();
 		}
 		
-		$response = $this->api->request("/public_keys", $parameters, API::REQUEST_METHOD_POST);
+		$parameters = array_merge($parameters, [
+			"content" => $content
+		]);
+		
+		$response = $api->request("/public_keys", $parameters, API::REQUEST_METHOD_POST);
 		if (!isset($response["public_key"])) {
 			throw new Exceptions\MalformedResponseException("`public_key` key not available in API response.");
 		}
 		
-		$this->fill($response["public_key"]);
-		
-		return $this;
+		return new static($response["public_key"], $api);
 	}
 	
 	public function update() {

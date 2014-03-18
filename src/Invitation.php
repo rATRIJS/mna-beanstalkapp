@@ -12,11 +12,6 @@ class Invitation extends Resource {
 	protected $updatedAt;
 	protected $createdAt;
 	
-	protected $mutableProperties = [
-		'email',
-		'name'
-	];
-	
 	public static function find(API $api = null) {
 		if (!isset($api)) {
 			$api = API::main();
@@ -49,6 +44,24 @@ class Invitation extends Resource {
 		return new static($response["invitation"], $api);
 	}
 	
+	public static function create($email, $name, API $api = null) {
+		if (!isset($api)) {
+			$api = API::main();
+		}
+		
+		$parameters = [
+			"email" => $email,
+			"name" => $name
+		];
+		
+		$response = $api->request("/invitations", $parameters, API::REQUEST_METHOD_POST);
+		if (!isset($response["invitation"])) {
+			throw new Exceptions\MalformedResponseException("`invitation` key not available in API response.");
+		}
+		
+		return new static($response["invitation"], $api);
+	}
+	
 	public static function resend($userId, API $api = null) {
 		if (!isset($api)) {
 			$api = API::main();
@@ -60,18 +73,5 @@ class Invitation extends Resource {
 		}
 		
 		return new static($response["invitation"], $api);
-	}
-	
-	public function create() {
-		$parameters = $this->exportForApi();
-		
-		$response = $api->request("/invitations", $parameters, API::REQUEST_METHOD_POST);
-		if (!isset($response["invitation"])) {
-			throw new Exceptions\MalformedResponseException("`invitation` key not available in API response.");
-		}
-		
-		$this->fill($response["invitation"]);
-		
-		return $this;
 	}
 }

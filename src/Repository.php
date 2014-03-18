@@ -82,36 +82,31 @@ class Repository extends Resource {
 		return new static($response["repository"], $api);
 	}
 	
-	public function create($typeId) {
-		$parameters = $this->exportForApi();
+	public static function create($typeId, $title, $name, array $parameters = [], API $api = null) {
+		if (!isset($api)) {
+			$api = API::main();
+		}
 		
-		$parameters["type_id"] = $typeId;
-		if (empty($parameters["color_label"])) {
-			unset($parameters["color_label"]);
-		}
-		if ($typeId === static::TYPE_ID_SUBVERSION || empty($parameters["default_branch"])) {
-			unset($parameters["default_branch"]);
-		}
-		if ($typeId === static::TYPE_ID_GIT || !isset($parameters["create_structure"])) {
-			unset($parameters["create_structure"]);
-		}
+		$parameters = array_merge($parameters, [
+			"type_id" => $typeId,
+			"title" => $title,
+			"name" => $name
+		]);
 		
 		$response = $this->api->request("/repositories", $parameters, API::REQUEST_METHOD_POST);
 		if (!isset($response["repository"])) {
 			throw new Exceptions\MalformedResponseException("`repository` key not available in API response.");
 		}
 		
-		$this->fill($response["repository"]);
-		
-		return $this;
+		return new static($response, $api);
 	}
 	
-	public function createGitRepository() {
-		return $this->create(static::TYPE_ID_GIT);
+	public static function createGitRepository($title, $name, array $parameters = [], API $api = null) {
+		return static::create(static::TYPE_ID_GIT, $title, $name, $parameters, $api);
 	}
 	
-	public function createSubversionRepository() {
-		return $this->create(static::TYPE_ID_SUBVERSION);
+	public static function createSubversionRepository($title, $name, array $parameters = [], API $api = null) {
+		return static::create(static::TYPE_ID_SUBVERSION, $title, $name, $parameters, $api);
 	}
 	
 	public function update() {
@@ -131,6 +126,14 @@ class Repository extends Resource {
 		$this->fill($response["repository"]);
 		
 		return $this;
+	}
+	
+	public function createFile($path, $contents, array $parameters = []) {
+		return File::create($this->id, $path, $contents, $parameters, $this->api);
+	}
+	
+	public function getNode(array $parameters = []) {
+		return Node::get($this->id, $parameters, $this->api);
 	}
 	
 	public function isGit() {

@@ -102,7 +102,7 @@ class API {
 				"Unauthorised access to `{$url}`. Got errors: {$responseErrors}"
 			);
 		}
-		elseif ($responseCode !== 200) {
+		elseif (intval(floor($responseCode / 100)) !== 2) {
 			throw new Exceptions\RequestException(
 				"Request to `{$url}` returned a non 200 response. Got errors: {$responseErrors}"
 			);

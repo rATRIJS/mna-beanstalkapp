@@ -53,17 +53,21 @@ class RepositoryImport extends Resource {
 		return new static($response["repository_import"], $api);
 	}
 	
-	public function create() {
-		$parameters = $this->exportForApi();
+	public static function create($repositoryId, $uri, API $api = null) {
+		if (!isset($api)) {
+			$api = API::main();
+		}
 		
-		$response = $this->api->request("/repository_imports", $parameters, API::REQUEST_METHOD_POST);
+		$parameters = [
+			"uri" => $uri
+		];
+		
+		$response = $api->request("/{$repositoryId}/repository_imports", $parameters, API::REQUEST_METHOD_POST);
 		if (!isset($response["repository_import"])) {
 			throw new Exceptions\MalformedResponseException("`repository_import` key not available in API response.");
 		}
 		
-		$this->fill($response["repository_import"]);
-		
-		return $this;
+		return new static($response["repository_import"], $api);
 	}
 	
 	public function isInState($state) {
